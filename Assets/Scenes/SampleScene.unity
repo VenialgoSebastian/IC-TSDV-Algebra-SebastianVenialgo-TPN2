@@ -342,6 +342,7 @@ MonoBehaviour:
   xMat: {fileID: 2100000, guid: 0c85dc03218bd914598b5a9318e72ecc, type: 2}
   yMat: {fileID: 2100000, guid: f0e819bdaf72f064494c78f833479913, type: 2}
   zMat: {fileID: 2100000, guid: d00025d7d3f79044bb74b2f947479505, type: 2}
+  segmentSize: 0.2
 --- !u!4 &1721288293
 Transform:
   m_ObjectHideFlags: 0
