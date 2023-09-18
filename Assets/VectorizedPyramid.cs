@@ -23,7 +23,7 @@ public class VectorizedPyramid : MonoBehaviour
     LineRenderer pyramidSideLine;
     public float faceSum = 0;
     public float faceAreaSum = 0;
-    public float volume = 0;
+    public float pyramidVolume = 0;
 
 
     void Start()
@@ -98,8 +98,12 @@ public class VectorizedPyramid : MonoBehaviour
 
             faceSum += sideMagnitude * 8;
 
+            float baseArea = sideMagnitude * sideMagnitude;
+
             faceAreaSum += sideMagnitude * heightMagnitude * 4;
-            faceAreaSum += sideMagnitude * sideMagnitude * 2;
+            faceAreaSum += baseArea * 2;
+
+            pyramidVolume += baseArea * heightMagnitude;
 
             originPos += crossVectorPos;
             firstVectorPos += crossVectorPos;
