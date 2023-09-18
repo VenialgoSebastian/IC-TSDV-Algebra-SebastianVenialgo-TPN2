@@ -76,9 +76,9 @@ public class VectorizedPyramid : MonoBehaviour
 
 
         float heightMagnitude = Mathf.Sqrt(Mathf.Pow(crossResult.x, 2) + Mathf.Pow(crossResult.y, 2) + Mathf.Pow(crossResult.z, 2));
+
         for (int i = 0; i < (1 / segmentSize) / 2; i++)
         {
-
             DrawLine(pyramidSideLine, originPos + (upRightDisplacement * i), originPos + (upRightDisplacement * i) + crossVectorPos);
             DrawLine(pyramidSideLine, firstVectorPos + (upLeftDisplacement * i), firstVectorPos + (upLeftDisplacement * i) + crossVectorPos);
             DrawLine(pyramidSideLine, secondVectorPos + (downRightDisplacement * i), secondVectorPos + (downRightDisplacement * i) + crossVectorPos);
@@ -92,7 +92,7 @@ public class VectorizedPyramid : MonoBehaviour
             faceSum += heightMagnitude * 4;
 
             // vector3 a - vector3 b 
-            Vector3 sideLength = firstVectorPos + (upLeftDisplacement * i) - originPos + (upRightDisplacement * i);
+            Vector3 sideLength = (firstVectorPos + (upLeftDisplacement * i)) - (originPos + (upRightDisplacement * i));
             // Magnitude of the previous substraction
             float sideMagnitude = Mathf.Sqrt(Mathf.Pow(sideLength.x, 2) + Mathf.Pow(sideLength.y, 2) + Mathf.Pow(sideLength.z, 2));
 
@@ -101,7 +101,20 @@ public class VectorizedPyramid : MonoBehaviour
             float baseArea = sideMagnitude * sideMagnitude;
 
             faceAreaSum += sideMagnitude * heightMagnitude * 4;
-            faceAreaSum += baseArea * 2;
+
+            if (i == 0 || i == (1 / segmentSize) / 2 - 1)
+            {
+                faceAreaSum += baseArea;
+                if (i == 0)
+                    Debug.Log(baseArea);
+            }
+
+            Vector3 nextSideLength = (firstVectorPos + (upLeftDisplacement * (i + 1))) - (originPos + (upRightDisplacement * (i + 1)));
+            float nextSideMagnitude = Mathf.Sqrt(Mathf.Pow(nextSideLength.x, 2) + Mathf.Pow(nextSideLength.y, 2) + Mathf.Pow(nextSideLength.z, 2));
+
+            float nextBaseArea = nextSideMagnitude * nextSideMagnitude;
+            Debug.Log( baseArea + " " + nextBaseArea);
+            faceAreaSum += baseArea - nextBaseArea;
 
             pyramidVolume += baseArea * heightMagnitude;
 
@@ -114,15 +127,14 @@ public class VectorizedPyramid : MonoBehaviour
             DrawLine(pyramidSideLine, originPos + (upRightDisplacement * i), secondVectorPos + (downRightDisplacement * i));
             DrawLine(pyramidSideLine, lastVerticePos + (downLeftDisplacement * i), firstVectorPos + (upLeftDisplacement * i));
             DrawLine(pyramidSideLine, lastVerticePos + (downLeftDisplacement * i), secondVectorPos + (downRightDisplacement * i));
-
         }
     }
 
     void DrawLine(LineRenderer line, Vector3 firstPos, Vector3 secondPos)
     {
         line = Instantiate(linePrefab, transform);
-        line.startWidth = 0.2f;
-        line.endWidth = 0.2f;
+        line.startWidth = 0.1f;
+        line.endWidth = 0.1f;
         line.material = pyramidMat;
 
         line.positionCount = 2;
