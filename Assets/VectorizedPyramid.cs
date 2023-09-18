@@ -20,8 +20,10 @@ public class VectorizedPyramid : MonoBehaviour
 
     Vector3 crossResult;
 
-    LineRenderer line;
+    LineRenderer pyramidSideLine;
     public float faceSum = 0;
+    public float faceAreaSum = 0;
+    public float volume = 0;
 
 
     void Start()
@@ -72,36 +74,42 @@ public class VectorizedPyramid : MonoBehaviour
         Vector3 downRightDisplacement = displacementX - displacementY;
         Vector3 downLeftDisplacement = -displacementX - displacementY;
 
+
+        float heightMagnitude = Mathf.Sqrt(Mathf.Pow(crossResult.x, 2) + Mathf.Pow(crossResult.y, 2) + Mathf.Pow(crossResult.z, 2));
         for (int i = 0; i < (1 / segmentSize) / 2; i++)
         {
 
-            DrawLine(line, originPos + (upRightDisplacement * i), originPos + (upRightDisplacement * i) + crossVectorPos);
-            DrawLine(line, firstVectorPos + (upLeftDisplacement * i), firstVectorPos + (upLeftDisplacement * i) + crossVectorPos);
-            DrawLine(line, secondVectorPos + (downRightDisplacement * i), secondVectorPos + (downRightDisplacement * i) + crossVectorPos);
-            DrawLine(line, lastVerticePos + (downLeftDisplacement * i), lastVerticePos + (downLeftDisplacement * i) + crossVectorPos);
+            DrawLine(pyramidSideLine, originPos + (upRightDisplacement * i), originPos + (upRightDisplacement * i) + crossVectorPos);
+            DrawLine(pyramidSideLine, firstVectorPos + (upLeftDisplacement * i), firstVectorPos + (upLeftDisplacement * i) + crossVectorPos);
+            DrawLine(pyramidSideLine, secondVectorPos + (downRightDisplacement * i), secondVectorPos + (downRightDisplacement * i) + crossVectorPos);
+            DrawLine(pyramidSideLine, lastVerticePos + (downLeftDisplacement * i), lastVerticePos + (downLeftDisplacement * i) + crossVectorPos);
 
-            DrawLine(line, originPos + (upRightDisplacement * i), firstVectorPos + (upLeftDisplacement * i));
-            DrawLine(line, originPos + (upRightDisplacement * i), secondVectorPos + (downRightDisplacement * i));
-            DrawLine(line, lastVerticePos + (downLeftDisplacement * i), firstVectorPos + (upLeftDisplacement * i));
-            DrawLine(line, lastVerticePos + (downLeftDisplacement * i), secondVectorPos + (downRightDisplacement * i));
+            DrawLine(pyramidSideLine, originPos + (upRightDisplacement * i), firstVectorPos + (upLeftDisplacement * i));
+            DrawLine(pyramidSideLine, originPos + (upRightDisplacement * i), secondVectorPos + (downRightDisplacement * i));
+            DrawLine(pyramidSideLine, lastVerticePos + (downLeftDisplacement * i), firstVectorPos + (upLeftDisplacement * i));
+            DrawLine(pyramidSideLine, lastVerticePos + (downLeftDisplacement * i), secondVectorPos + (downRightDisplacement * i));
 
-            faceSum += Mathf.Sqrt(Mathf.Pow(crossResult.x, 2) + Mathf.Pow(crossResult.y, 2) + Mathf.Pow(crossResult.z, 2)) * 4;
+            faceSum += heightMagnitude * 4;
 
             // vector3 a - vector3 b 
             Vector3 sideLength = firstVectorPos + (upLeftDisplacement * i) - originPos + (upRightDisplacement * i);
-
             // Magnitude of the previous substraction
-            faceSum += Mathf.Sqrt(Mathf.Pow(sideLength.x, 2) + Mathf.Pow(sideLength.y, 2) + Mathf.Pow(sideLength.z, 2)) * 8;
+            float sideMagnitude = Mathf.Sqrt(Mathf.Pow(sideLength.x, 2) + Mathf.Pow(sideLength.y, 2) + Mathf.Pow(sideLength.z, 2));
+
+            faceSum += sideMagnitude * 8;
+
+            faceAreaSum += sideMagnitude * heightMagnitude * 4;
+            faceAreaSum += sideMagnitude * sideMagnitude * 2;
 
             originPos += crossVectorPos;
             firstVectorPos += crossVectorPos;
             secondVectorPos += crossVectorPos;
             lastVerticePos += crossVectorPos;
 
-            DrawLine(line, originPos + (upRightDisplacement * i), firstVectorPos + (upLeftDisplacement * i));
-            DrawLine(line, originPos + (upRightDisplacement * i), secondVectorPos + (downRightDisplacement * i));
-            DrawLine(line, lastVerticePos + (downLeftDisplacement * i), firstVectorPos + (upLeftDisplacement * i));
-            DrawLine(line, lastVerticePos + (downLeftDisplacement * i), secondVectorPos + (downRightDisplacement * i));
+            DrawLine(pyramidSideLine, originPos + (upRightDisplacement * i), firstVectorPos + (upLeftDisplacement * i));
+            DrawLine(pyramidSideLine, originPos + (upRightDisplacement * i), secondVectorPos + (downRightDisplacement * i));
+            DrawLine(pyramidSideLine, lastVerticePos + (downLeftDisplacement * i), firstVectorPos + (upLeftDisplacement * i));
+            DrawLine(pyramidSideLine, lastVerticePos + (downLeftDisplacement * i), secondVectorPos + (downRightDisplacement * i));
 
         }
     }
