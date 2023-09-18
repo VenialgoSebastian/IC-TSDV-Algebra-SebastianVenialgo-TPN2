@@ -14,13 +14,13 @@ public class VectorizedPyramid : MonoBehaviour
     [SerializeField] Material zMat;
     [SerializeField] Material pyramidMat;
 
-    [SerializeField] float segmentSize = 0.2f;
+    [SerializeField] float segmentSize;
     Vector3 initialVector;
     Vector3 secondVector;
 
     Vector3 crossResult;
 
-    void Start()
+    void Awake()
     {
         SetVectors();
     }
@@ -93,6 +93,7 @@ public class VectorizedPyramid : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        BuildPyramid();
+        if (Application.isPlaying)
+            BuildPyramid();
     }
 }
