@@ -20,9 +20,14 @@ public class VectorizedPyramid : MonoBehaviour
 
     Vector3 crossResult;
 
-    void Awake()
+    LineRenderer line;
+    public float faceSum = 0;
+
+
+    void Start()
     {
         SetVectors();
+        BuildPyramidLineRender();
     }
 
     void SetVectors()
@@ -49,7 +54,70 @@ public class VectorizedPyramid : MonoBehaviour
         crossLine.SetPosition(1, crossResult);
     }
 
-    void BuildPyramid()
+    void BuildPyramidLineRender()
+    {
+        Vector3 origin = new Vector3(0, 0, 0);
+
+        Vector3 originPos = origin;
+        Vector3 firstVectorPos = initialVector;
+        Vector3 secondVectorPos = secondVector;
+        Vector3 crossVectorPos = crossResult;
+        Vector3 lastVerticePos = firstVectorPos + secondVectorPos;
+
+        Vector3 displacementX = new Vector3(initialVector.x * segmentSize, initialVector.y * segmentSize, initialVector.z * segmentSize);
+        Vector3 displacementY = new Vector3(secondVector.x * segmentSize, secondVector.y * segmentSize, secondVector.z * segmentSize);
+
+        Vector3 upRightDisplacement = displacementX + displacementY;
+        Vector3 upLeftDisplacement = -displacementX + displacementY;
+        Vector3 downRightDisplacement = displacementX - displacementY;
+        Vector3 downLeftDisplacement = -displacementX - displacementY;
+
+        for (int i = 0; i < (1 / segmentSize) / 2; i++)
+        {
+
+            DrawLine(line, originPos + (upRightDisplacement * i), originPos + (upRightDisplacement * i) + crossVectorPos);
+            DrawLine(line, firstVectorPos + (upLeftDisplacement * i), firstVectorPos + (upLeftDisplacement * i) + crossVectorPos);
+            DrawLine(line, secondVectorPos + (downRightDisplacement * i), secondVectorPos + (downRightDisplacement * i) + crossVectorPos);
+            DrawLine(line, lastVerticePos + (downLeftDisplacement * i), lastVerticePos + (downLeftDisplacement * i) + crossVectorPos);
+
+            DrawLine(line, originPos + (upRightDisplacement * i), firstVectorPos + (upLeftDisplacement * i));
+            DrawLine(line, originPos + (upRightDisplacement * i), secondVectorPos + (downRightDisplacement * i));
+            DrawLine(line, lastVerticePos + (downLeftDisplacement * i), firstVectorPos + (upLeftDisplacement * i));
+            DrawLine(line, lastVerticePos + (downLeftDisplacement * i), secondVectorPos + (downRightDisplacement * i));
+
+            faceSum += Mathf.Sqrt(Mathf.Pow(crossResult.x, 2) + Mathf.Pow(crossResult.y, 2) + Mathf.Pow(crossResult.z, 2)) * 4;
+
+            // vector3 a - vector3 b 
+            Vector3 sideLength = firstVectorPos + (upLeftDisplacement * i) - originPos + (upRightDisplacement * i);
+
+            // Magnitude of the previous substraction
+            faceSum += Mathf.Sqrt(Mathf.Pow(sideLength.x, 2) + Mathf.Pow(sideLength.y, 2) + Mathf.Pow(sideLength.z, 2)) * 8;
+
+            originPos += crossVectorPos;
+            firstVectorPos += crossVectorPos;
+            secondVectorPos += crossVectorPos;
+            lastVerticePos += crossVectorPos;
+
+            DrawLine(line, originPos + (upRightDisplacement * i), firstVectorPos + (upLeftDisplacement * i));
+            DrawLine(line, originPos + (upRightDisplacement * i), secondVectorPos + (downRightDisplacement * i));
+            DrawLine(line, lastVerticePos + (downLeftDisplacement * i), firstVectorPos + (upLeftDisplacement * i));
+            DrawLine(line, lastVerticePos + (downLeftDisplacement * i), secondVectorPos + (downRightDisplacement * i));
+
+        }
+    }
+
+    void DrawLine(LineRenderer line, Vector3 firstPos, Vector3 secondPos)
+    {
+        line = Instantiate(linePrefab, transform);
+        line.startWidth = 0.2f;
+        line.endWidth = 0.2f;
+        line.material = pyramidMat;
+
+        line.positionCount = 2;
+        line.SetPosition(0, firstPos);
+        line.SetPosition(1, secondPos);
+    }
+    void BuildPyramidGizmo()
     {
         Vector3 origin = new Vector3(0, 0, 0);
 
@@ -79,6 +147,14 @@ public class VectorizedPyramid : MonoBehaviour
             Gizmos.DrawLine(lastVerticePos + (downLeftDisplacement * i), firstVectorPos + (upLeftDisplacement * i));
             Gizmos.DrawLine(lastVerticePos + (downLeftDisplacement * i), secondVectorPos + (downRightDisplacement * i));
 
+            faceSum += Mathf.Sqrt(Mathf.Pow(crossResult.x, 2) + Mathf.Pow(crossResult.y, 2) + Mathf.Pow(crossResult.z, 2)) * 4;
+
+            // vector3 a - vector3 b 
+            Vector3 sideLength = firstVectorPos + (upLeftDisplacement * i) - originPos + (upRightDisplacement * i);
+
+            // Magnitude of the previous substraction
+            faceSum += Mathf.Sqrt(Mathf.Pow(sideLength.x, 2) + Mathf.Pow(sideLength.y, 2) + Mathf.Pow(sideLength.z, 2)) * 8;
+
             originPos += crossVectorPos;
             firstVectorPos += crossVectorPos;
             secondVectorPos += crossVectorPos;
@@ -93,7 +169,7 @@ public class VectorizedPyramid : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if (Application.isPlaying)
-            BuildPyramid();
+        //if (Application.isPlaying)
+        //    BuildPyramid();
     }
 }
