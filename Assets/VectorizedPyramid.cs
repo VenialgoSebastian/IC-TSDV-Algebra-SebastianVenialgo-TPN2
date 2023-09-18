@@ -14,7 +14,9 @@ public class VectorizedPyramid : MonoBehaviour
     [SerializeField] Material zMat;
     [SerializeField] Material pyramidMat;
 
-    [SerializeField] float segmentSize;
+
+    [SerializeField] float segmentQty;
+    float segmentSize;
     Vector3 initialVector;
     Vector3 secondVector;
 
@@ -34,6 +36,7 @@ public class VectorizedPyramid : MonoBehaviour
 
     void SetVectors()
     {
+        segmentSize = 1 / segmentQty;
         initialVector = new Vector3(Random.Range(0, 11), Random.Range(0, 11), Random.Range(0, 11));
         secondVector = new Vector3(initialVector.y, initialVector.x * -1, initialVector.z);
 
@@ -113,7 +116,7 @@ public class VectorizedPyramid : MonoBehaviour
             float nextSideMagnitude = Mathf.Sqrt(Mathf.Pow(nextSideLength.x, 2) + Mathf.Pow(nextSideLength.y, 2) + Mathf.Pow(nextSideLength.z, 2));
 
             float nextBaseArea = nextSideMagnitude * nextSideMagnitude;
-            Debug.Log( baseArea + " " + nextBaseArea);
+            Debug.Log(baseArea + " " + nextBaseArea);
             faceAreaSum += baseArea - nextBaseArea;
 
             pyramidVolume += baseArea * heightMagnitude;
